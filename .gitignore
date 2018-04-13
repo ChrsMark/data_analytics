@@ -1,0 +1,9 @@
+.bash_history
+.bashrc
+.cache/
+.cloud-locale-test.skip
+.gitconfig
+.profile
+.ssh/
+.viminfo
+gnuplot.py-py3k

@@ -2,6 +2,7 @@ import os, sys
 import numpy 
 import time
 from math import radians, cos, sin, asin, sqrt
+from sklearn.neighbors import NearestNeighbors
 
 def haversine(lon1, lat1, lon2, lat2):
     """
@@ -28,7 +29,7 @@ def readFile(filename):
         for line in f:
             lat = float(line.split("|")[4])
             long = float(line.split("|")[5])
-            res.append((lat, long))
+            res.append([lat, long])
     return res
              
 def readFile_two(filename):
@@ -37,23 +38,35 @@ def readFile_two(filename):
         for line in f:
             lat = float(line.split("|")[3])
             long = float(line.split("|")[4])
-            res.append((lat, long))
+            res.append([lat, long])
     return res
 
-def run_experiment(R, M, hotels, rests):
+def run_experiment(h_r, M, hotels, rests):
     scores = []
     start_time = time.time()
-    for hotel in hotels:
+    k = 5
+    for hotel in hotels[:h_r]:
         good_rests = 0
-        for rest in rests[:M]:
-           dist = calc_distance(hotel, rest)
-           if dist <= R:
-               good_rests = good_rests + 1
-        scores.append(good_rests)
+        array_set = numpy.array([hotel] + rests[:M])
+        dist = calc_k_neis_max_dist(k, array_set)
+        scores.append(dist)
     elapsed_time = time.time() - start_time
+    print(scores)
     mean_score = numpy.mean(scores)
-    with open("test_results_R.txt", "a") as myfile:
-      myfile.write("{}|{}|{}|{}\n".format(R, M, mean_score, elapsed_time))
+    best_score = max(scores)
+    print(mean_score, best_score)
+    with open("test_results_k_meanscore.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(h_r, M, mean_score))
+    with open("test_results_k_bestscore.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(h_r, M, best_score))
+    with open("test_results_k_elapsedtime.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(h_r, M, elapsed_time))
+
+def calc_k_neis_max_dist(k, array_set):
+    nbrs = NearestNeighbors(n_neighbors=k+1, algorithm='ball_tree').\
+        fit(array_set)
+    distances, indices = nbrs.kneighbors(array_set)
+    return max(distances[0])
 
 if __name__ == "__main__":
     
@@ -62,12 +75,14 @@ if __name__ == "__main__":
 
     rests = readFile_two('./restaurants.txt')
     print(len(rests))
-    R_range = [1, 5, 10, 50, 100, 500, 1000, 10000]
+    hotel_range = [50, 100, 500, 1000, 10000, len(hotels)]
     Ms = [50, 100, 500, 1000, 5000, 10000, len(rests) -1]
-    count = 0 
-    all_ = len(R_range) 
-    for r in R_range:
-        # for m in Ms:
-         #   count += 1
-        run_experiment(r, len(rests) - 1, hotels, rests)
-        print("{} out of {}".format(count, all_))
+    # Ms = [100]
+    count = 0
+    # run_experiment(100, 100, hotels, rests, 3)
+    all_ = len(hotel_range) * len(Ms) 
+    for h_r in hotel_range:
+         for m in Ms:
+             count += 1
+             print("{} out of {}".format(count, all_))
+             run_experiment(h_r, m, hotels, rests)

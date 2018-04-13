@@ -40,11 +40,11 @@ def readFile_two(filename):
             res.append((lat, long))
     return res
 
-def run_experiment(num_hotels, M, hotels, rests):
+def run_experiment(h_range, M, hotels, rests):
     scores = []
-    R = 10
+    R = 100
     start_time = time.time()
-    for hotel in hotels[:num_hotels]:
+    for hotel in hotels[:h_range]:
         good_rests = 0
         for rest in rests[:M]:
            dist = calc_distance(hotel, rest)
@@ -53,8 +53,14 @@ def run_experiment(num_hotels, M, hotels, rests):
         scores.append(good_rests)
     elapsed_time = time.time() - start_time
     mean_score = numpy.mean(scores)
-    with open("test_results_Ms.txt", "a") as myfile:
-      myfile.write("{}|{}|{}|{}\n".format(R, M, mean_score, elapsed_time))
+    best_score = max(scores)
+    with open("test_results_M_mean_score.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(h_range, M, mean_score))
+    with open("test_results_M_max_score.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(h_range, M, best_score))
+    with open("test_results_M_time.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(h_range, M, elapsed_time))
+
 
 if __name__ == "__main__":
     
@@ -63,12 +69,12 @@ if __name__ == "__main__":
 
     rests = readFile_two('./restaurants.txt')
     print(len(rests))
-    M_range = [1, 5, 10, 50, 100, 500, 1000, 10000, len(hotels) -1]
+    h_range = [50, 100, 500, 1000, 5000, 10000, len(hotels)-1]
     Ms = [50, 100, 500, 1000, 5000, 10000, len(rests) -1]
     count = 0 
-    all_ = len(M_range) 
-    for r in M_range:
+    all_ = len(h_range) * len(Ms)
+    for r in h_range:
         for m in Ms:
             count += 1
-        run_experiment(r, m, hotels, rests)
-        print("{} out of {}".format(count, all_))
+            run_experiment(r, m, hotels, rests)
+            print("{} out of {}".format(count, all_))

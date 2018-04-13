@@ -41,11 +41,10 @@ def readFile_two(filename):
             res.append([lat, long])
     return res
 
-def run_experiment(num_hotels, M, hotels, rests, k):
+def run_experiment(k, M, hotels, rests):
     scores = []
-    R = 10
     start_time = time.time()
-    for hotel in hotels[:num_hotels]:
+    for hotel in hotels:
         good_rests = 0
         array_set = numpy.array([hotel] + rests[:M])
         dist = calc_k_neis_max_dist(k, array_set)
@@ -53,9 +52,14 @@ def run_experiment(num_hotels, M, hotels, rests, k):
     elapsed_time = time.time() - start_time
     print(scores)
     mean_score = numpy.mean(scores)
-    print(mean_score, max(scores))
-    with open("test_results_Ms.txt", "a") as myfile:
-      myfile.write("{}|{}|{}|{}\n".format(R, M, mean_score, elapsed_time))
+    best_score = max(scores)
+    print(mean_score, best_score)
+    with open("test_results_k_meanscore.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(k, M, mean_score))
+    with open("test_results_k_bestscore.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(k, M, best_score))
+    with open("test_results_k_elapsedtime.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(k, M, elapsed_time))
 
 def calc_k_neis_max_dist(k, array_set):
     nbrs = NearestNeighbors(n_neighbors=k+1, algorithm='ball_tree').\
@@ -71,13 +75,15 @@ if __name__ == "__main__":
     rests = readFile_two('./restaurants.txt')
     print(len(rests))
     K = [1, 5, 10, 50, 100, 500, 1000, 10000]
-    # Ms = [50, 100, 500, 1000, 5000, 10000, len(rests) -1]
-    Ms = [100]
+    Ms = [50, 100, 500, 1000, 5000, 10000, len(rests) -1]
+    # Ms = [100]
     count = 0
-    run_experiment(100, 100, hotels, rests, 3)
-#    all_ = len(k) * len(Ms) 
-#    for k in K:
-#        for m in Ms:
-#            count += 1
-#            run_experiment(r, m, hotels, rests)
-#            print("{} out of {}".format(count, all_))
+    # run_experiment(100, 100, hotels, rests, 3)
+    all_ = len(k) * len(Ms) 
+    for k in K:
+         for m in Ms:
+             count += 1
+             print("{} out of {}".format(count, all_))
+             if k > m:
+                 continue
+             run_experiment(k, m, hotels, rests)

@@ -66,7 +66,9 @@ def run_experiment(R, M, hotels, rests):
     print(hotels_scores)
     # mean_score = numpy.mean(scores)
     with open("test_results_R.txt", "a") as myfile:
-      myfile.write("{}|{}|{}|{}\n".format(R, M, mean_score, elapsed_time))
+      myfile.write("{}|{}|{}|{}\n".\
+          format(R, M, best_score, elapsed_time, best_pair)
+      )
 
 if __name__ == "__main__":
     

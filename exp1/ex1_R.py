@@ -52,8 +52,14 @@ def run_experiment(R, M, hotels, rests):
         scores.append(good_rests)
     elapsed_time = time.time() - start_time
     mean_score = numpy.mean(scores)
-    with open("test_results_R.txt", "a") as myfile:
-      myfile.write("{}|{}|{}|{}\n".format(R, M, mean_score, elapsed_time))
+    best_score = max(scores)
+    with open("test_results_R_mean_score.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(R, M, mean_score))
+    with open("test_results_R_max_score.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(R, M, best_score))
+    with open("test_results_R_time.txt", "a") as myfile:
+      myfile.write("{}\t{}\t{}\n".format(R, M, elapsed_time))
+
 
 if __name__ == "__main__":
     
@@ -62,12 +68,12 @@ if __name__ == "__main__":
 
     rests = readFile_two('./restaurants.txt')
     print(len(rests))
-    R_range = [1, 5, 10, 50, 100, 500, 1000, 10000]
+    R_range = [1, 5, 10, 50, 100, 200, 350, 500, 1000, 10000]
     Ms = [50, 100, 500, 1000, 5000, 10000, len(rests) -1]
     count = 0 
-    all_ = len(R_range) 
+    all_ = len(R_range) * len(Ms)
     for r in R_range:
-        # for m in Ms:
-         #   count += 1
-        run_experiment(r, len(rests) - 1, hotels, rests)
-        print("{} out of {}".format(count, all_))
+        for m in Ms:
+            count += 1
+            run_experiment(r, m, hotels, rests)
+            print("{} out of {}".format(count, all_))
