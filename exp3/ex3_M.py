@@ -40,21 +40,32 @@ def readFile_two(filename):
             res.append((lat, long))
     return res
 
-def run_experiment(num_hotels, M, hotels, rests):
-    scores = []
-    R = 10
+def run_experiment(r_h, M, hotels, rests):
+    hotels_scores = []
     start_time = time.time()
-    for hotel in hotels[:num_hotels]:
+    R = 100
+    for hotel in hotels:
         good_rests = 0
         for rest in rests[:M]:
            dist = calc_distance(hotel, rest)
            if dist <= R:
                good_rests = good_rests + 1
-        scores.append(good_rests)
+        hotels_scores.append(good_rests)
+    best_score = min(hotels_scores)
+    best_pair = []
+    for idx_1, hotel_1 in enumerate(hotels):
+        for idx_2, hotel_2 in enumerate(hotels[(idx_1+1):]):
+            dist_h = calc_distance(hotel_1, hotel_2)
+            if dist_h <= 2 * R:
+                if best_score < hotels_scores[idx_1] + hotels_scores[idx_1 + idx_2]:
+                    best_score = hotels_scores[idx_1] + hotels_scores[idx_1 + idx_2]
+                    best_pair = [hotel_1, hotel_2]
     elapsed_time = time.time() - start_time
-    mean_score = numpy.mean(scores)
-    with open("test_results_Ms.txt", "a") as myfile:
-      myfile.write("{}|{}|{}|{}\n".format(R, M, mean_score, elapsed_time))
+    # mean_score = numpy.mean(scores)
+    with open("test_results_M_best_score.txt", "a") as myfile:
+        myfile.write("{}\t{}\t{}\n".format(r_h, M, best_score))
+    with open("test_results_M_time.txt", "a") as myfile:
+        myfile.write("{}\t{}\t{}\n".format(r_h, M, elapsed_time))
 
 if __name__ == "__main__":
     
@@ -63,13 +74,13 @@ if __name__ == "__main__":
 
     rests = readFile_two('./restaurants.txt')
     print(len(rests))
-    K = [1, 5, 10, 50, 100, 500, 1000, 10000]
-    # Ms = [50, 100, 500, 1000, 5000, 10000, len(rests) -1]
-    Ms = [100]
+    R_range = [1, 5, 10, 50, 100, 500, 1000, len(hotels) -1]
+    Ms = [50, 100, 500, 1000, 5000, 10000]
     count = 0 
-    all_ = len(k) * len(Ms) 
-    for k in K:
+    all_ = len(R_range)
+    run_experiment(100, 10, hotels, rests) 
+    for r in R_range:
         for m in Ms:
             count += 1
-            run_experiment(r, m, hotels, rests)
+            run_experiment(r, len(rests) - 1, hotels[:r], rests)
             print("{} out of {}".format(count, all_))

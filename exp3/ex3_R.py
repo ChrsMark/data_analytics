@@ -52,8 +52,6 @@ def run_experiment(R, M, hotels, rests):
         hotels_scores.append(good_rests)
     best_score = min(hotels_scores)
     best_pair = []
-    print(hotels_scores)
-    print(sorted(hotels_scores))
     for idx_1, hotel_1 in enumerate(hotels):
         for idx_2, hotel_2 in enumerate(hotels[(idx_1+1):]):
             dist_h = calc_distance(hotel_1, hotel_2)
@@ -61,14 +59,12 @@ def run_experiment(R, M, hotels, rests):
                 if best_score < hotels_scores[idx_1] + hotels_scores[idx_1 + idx_2]:
                     best_score = hotels_scores[idx_1] + hotels_scores[idx_1 + idx_2]
                     best_pair = [hotel_1, hotel_2]
-    print(best_score, best_pair)
     elapsed_time = time.time() - start_time
-    print(hotels_scores)
     # mean_score = numpy.mean(scores)
-    with open("test_results_R.txt", "a") as myfile:
-      myfile.write("{}|{}|{}|{}\n".\
-          format(R, M, best_score, elapsed_time, best_pair)
-      )
+    with open("test_results_R_best_score.txt", "a") as myfile:
+        myfile.write("{}\t{}\t{}\n".format(R, M, best_score))
+    with open("test_results_R_time.txt", "a") as myfile:
+        myfile.write("{}\t{}\t{}\n".format(R, M, elapsed_time))
 
 if __name__ == "__main__":
     
@@ -78,12 +74,12 @@ if __name__ == "__main__":
     rests = readFile_two('./restaurants.txt')
     print(len(rests))
     R_range = [1, 5, 10, 50, 100, 500, 1000, 10000]
-    Ms = [50, 100, 500, 1000, 5000, 10000, len(rests) -1]
+    Ms = [50, 100, 500, 1000, 5000, 10000]
     count = 0 
     all_ = len(R_range)
     run_experiment(100, 10, hotels, rests) 
-#    for r in R_range:
-#        # for m in Ms:
-#         #   count += 1
-#        run_experiment(r, len(rests) - 1, hotels, rests)
-#        print("{} out of {}".format(count, all_))
+    for r in R_range:
+        for m in Ms:
+            count += 1
+            run_experiment(r, len(rests) - 1, hotels, rests)
+            print("{} out of {}".format(count, all_))
