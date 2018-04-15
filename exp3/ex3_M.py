@@ -74,13 +74,13 @@ if __name__ == "__main__":
 
     rests = readFile_two('./restaurants.txt')
     print(len(rests))
-    R_range = [1, 5, 10, 50, 100, 500, 1000, len(hotels) -1]
+    R_range = [1, 5, 10, 50, 100, 500, 1000]
     Ms = [50, 100, 500, 1000, 5000, 10000]
     count = 0 
-    all_ = len(R_range)
+    all_ = len(R_range)*len(Ms)
     run_experiment(100, 10, hotels, rests) 
     for r in R_range:
         for m in Ms:
             count += 1
-            run_experiment(r, len(rests) - 1, hotels[:r], rests)
+            run_experiment(r, m, hotels[:r], rests)
             print("{} out of {}".format(count, all_))

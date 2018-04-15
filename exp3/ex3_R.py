@@ -75,11 +75,11 @@ if __name__ == "__main__":
     print(len(rests))
     R_range = [1, 5, 10, 50, 100, 500, 1000, 10000]
     Ms = [50, 100, 500, 1000, 5000, 10000]
-    count = 0 
-    all_ = len(R_range)
-    run_experiment(100, 10, hotels, rests) 
+    count = 0
+    hotels = hotels[:5000] 
+    all_ = len(R_range)*len(Ms)
     for r in R_range:
         for m in Ms:
             count += 1
-            run_experiment(r, len(rests) - 1, hotels, rests)
+            run_experiment(r, m, hotels, rests)
             print("{} out of {}".format(count, all_))
