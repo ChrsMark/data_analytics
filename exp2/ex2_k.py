@@ -50,15 +50,14 @@ def run_experiment(k, M, hotels, rests):
         dist = calc_k_neis_max_dist(k, array_set)
         scores.append(dist)
     elapsed_time = time.time() - start_time
-    print(scores)
     mean_score = numpy.mean(scores)
-    best_score = max(scores)
+    best_score = min(scores)
     print(mean_score, best_score)
-    with open("test_results_k_meanscore.txt", "a") as myfile:
+    with open("test_results_k_meanscore_big5.txt", "a") as myfile:
       myfile.write("{}\t{}\t{}\n".format(k, M, mean_score))
-    with open("test_results_k_bestscore.txt", "a") as myfile:
+    with open("test_results_k_bestscore_big5.txt", "a") as myfile:
       myfile.write("{}\t{}\t{}\n".format(k, M, best_score))
-    with open("test_results_k_elapsedtime.txt", "a") as myfile:
+    with open("test_results_k_elapsedtime_big5.txt", "a") as myfile:
       myfile.write("{}\t{}\t{}\n".format(k, M, elapsed_time))
 
 def calc_k_neis_max_dist(k, array_set):
@@ -74,12 +73,12 @@ if __name__ == "__main__":
 
     rests = readFile_two('./restaurants.txt')
     print(len(rests))
-    K = [1, 5, 10, 50, 100, 500, 1000, 10000]
-    Ms = [50, 100, 500, 1000, 5000, 10000, len(rests) -1]
+    K = [1, 5, 10, 50, 100, 500]
+    Ms = [50, 100, 500, 1000, 5000]
     # Ms = [100]
     count = 0
     # run_experiment(100, 100, hotels, rests, 3)
-    all_ = len(k) * len(Ms) 
+    all_ = len(K) * len(Ms) 
     for k in K:
          for m in Ms:
              count += 1

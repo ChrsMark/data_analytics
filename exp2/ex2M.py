@@ -51,15 +51,14 @@ def run_experiment(h_r, M, hotels, rests):
         dist = calc_k_neis_max_dist(k, array_set)
         scores.append(dist)
     elapsed_time = time.time() - start_time
-    print(scores)
     mean_score = numpy.mean(scores)
-    best_score = max(scores)
+    best_score = min(scores)
     print(mean_score, best_score)
-    with open("test_results_k_meanscore.txt", "a") as myfile:
+    with open("test_results_M_meanscore_min.txt", "a") as myfile:
       myfile.write("{}\t{}\t{}\n".format(h_r, M, mean_score))
-    with open("test_results_k_bestscore.txt", "a") as myfile:
+    with open("test_results_M_bestscore_min.txt", "a") as myfile:
       myfile.write("{}\t{}\t{}\n".format(h_r, M, best_score))
-    with open("test_results_k_elapsedtime.txt", "a") as myfile:
+    with open("test_results_M_elapsedtime_min.txt", "a") as myfile:
       myfile.write("{}\t{}\t{}\n".format(h_r, M, elapsed_time))
 
 def calc_k_neis_max_dist(k, array_set):
